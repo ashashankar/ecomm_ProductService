@@ -3,10 +3,13 @@ package com.scaler.services;
 import com.scaler.dtos.FakeStoreProductDto;
 import com.scaler.models.Category;
 import com.scaler.models.Product;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FakeStoreProductService implements ProductService {
@@ -26,10 +29,14 @@ public class FakeStoreProductService implements ProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        List<FakeStoreProductDto> fakeStoreProductDtos;
-        fakeStoreProductDtos = (List<FakeStoreProductDto>) restTemplate.getForEntity("https://fakestoreapi.com/products", List.class);
-
-        return null;
+        List<Product> products = new ArrayList<>();
+        ResponseEntity<FakeStoreProductDto[]> response = restTemplate.getForEntity("https://fakestoreapi.com/products", FakeStoreProductDto[].class);
+        FakeStoreProductDto[] fakeStoreProductDtos = response.getBody();
+        for(FakeStoreProductDto fakeStoreProductDto : fakeStoreProductDtos) {
+            Product product = convertFakeStoreProductDtotoProduct(fakeStoreProductDto);
+            products.add(product);
+        }
+        return products;
     }
 
     @Override

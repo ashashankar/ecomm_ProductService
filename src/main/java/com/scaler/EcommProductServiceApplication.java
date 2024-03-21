@@ -1,4 +1,4 @@
-package com.scaler.ecomm_productservice;
+package com.scaler;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
