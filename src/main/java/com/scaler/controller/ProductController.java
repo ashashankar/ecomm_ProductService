@@ -1,5 +1,6 @@
 package com.scaler.controller;
 
+import com.scaler.dtos.ProductDto;
 import com.scaler.models.Product;
 import com.scaler.services.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +38,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public Product replaceProduct(@PathVariable("id") Long id, @RequestBody Product product) {
-        return new Product();
+    public Product replaceProduct(@PathVariable("id") Long id, @RequestBody ProductDto product) {
+        return productService.replaceProduct(id, product);
     }
 
     @DeleteMapping("/{id}")

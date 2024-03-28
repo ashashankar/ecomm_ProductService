@@ -1,10 +1,14 @@
 package com.scaler.services;
 
 import com.scaler.dtos.FakeStoreProductDto;
+import com.scaler.dtos.ProductDto;
 import com.scaler.models.Category;
 import com.scaler.models.Product;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -45,8 +49,13 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product replaceProduct(Long Id) {
-        return null;
+    public Product replaceProduct(Long Id, ProductDto productDTO) {
+        //replace product with givenId with input product and return updated product.
+        Product product = convertProductDtoToProduct(productDTO);
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(product, FakeStoreProductDto.class);
+        HttpMessageConverterExtractor<FakeStoreProductDto> responseExtractor = new HttpMessageConverterExtractor(FakeStoreProductDto.class, restTemplate.getMessageConverters());
+        FakeStoreProductDto fakeStoreProductDto =  restTemplate.execute("https://fakestoreapi.com/products/"+Id, HttpMethod.PUT, requestCallback, responseExtractor);
+        return convertFakeStoreProductDtotoProduct(fakeStoreProductDto);
     }
 
     @Override
@@ -64,7 +73,17 @@ public class FakeStoreProductService implements ProductService {
         product.setId(fakeStoreProductDto.getId());
         product.setTitle(fakeStoreProductDto.getTitle());
         Category category = new Category();
-        category.setTitle(fakeStoreProductDto.getCatergory());
+        category.setTitle(fakeStoreProductDto.getCategory());
+        product.setCategory(category);
+        return product;
+    }
+
+    private Product convertProductDtoToProduct(ProductDto productDto) {
+        Product product = new Product();
+        //product.setId(productDto.getId());
+        product.setTitle(productDto.getTitle());
+        Category category = new Category();
+        category.setTitle(productDto.getCategory());
         product.setCategory(category);
         return product;
     }
